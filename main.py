@@ -53,6 +53,8 @@ def check_inventory(category_id, category_name, low_inventory):
 
 
 schedule.every(6).hours.do(schedule_task)
+# comment out the above line, and uncomment the line below to have a quicker turnaround time for demo
+# schedule.every(60).seconds.do(schedule_task)
 
 
 while True:
