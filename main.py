@@ -1,7 +1,7 @@
 # Schedule Library imported
 import schedule
 import time
-import mysql.connector
+import psycopg2
 import os
 from dotenv import load_dotenv
 from sendgrid import SendGridAPIClient
@@ -9,18 +9,18 @@ from sendgrid.helpers.mail import Mail, Content
 
 load_dotenv()
 
-mydb = mysql.connector.connect(
+conn = psycopg2.connect(
     host=os.environ.get("host"),
     user=os.environ.get("user"),
     password=os.environ.get("password"),
     database=os.environ.get("database")
 )
 
-mycursor = mydb.cursor()
+mycursor = conn.cursor()
 
 
 def schedule_task():
-    mycursor.execute("SELECT * from Categories")
+    mycursor.execute("SELECT * from production.Categories")
     categories = mycursor.fetchall()
     low_inventory = []
     for x in categories:
@@ -46,7 +46,7 @@ def send_mail(low_inventory):
 
 
 def check_inventory(category_id, category_name, low_inventory):
-    mycursor.execute("SELECT count(*) from Products Where category_id = % s" % category_id)
+    mycursor.execute("SELECT count(*) from production.Products Where category_id = % s" % category_id)
     result = mycursor.fetchall()
     if result[0][0] < 35:
         low_inventory.append("Stock count of {} : {}".format(category_name, result[0][0]))
